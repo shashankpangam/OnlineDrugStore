@@ -116,22 +116,19 @@ public class Product {
         this.image = img;
     }
 
-    public ArrayList<Product> getAllProducts() {
+    public static ArrayList<Product> getAllProducts() {
         Database db = new Database();
         Statement stmt = null;
         ArrayList<Product> products = new ArrayList<Product>();
         try {
             stmt = db.getConnection().createStatement();
-            ResultSet rs = stmt.executeQuery("Select * from tbl_products");
-            while(rs.next()){
-                if(rs.next())
-                {
-                    Product p = new Product(rs.getInt(1),rs.getString(2),rs.getString(3),rs.getString(4),rs.getString(5),rs.getFloat(6),rs.getInt(7),rs.getInt(8),rs.getInt(9),rs.getString(10));
+            ResultSet rs = stmt.executeQuery("Select * from tbl_product");
+            while (rs.next()) {
+                if (rs.next()) {
+                    Product p = new Product(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getFloat(6), rs.getInt(7), rs.getInt(8), rs.getInt(9), rs.getString(10));
                     products.add(p);
-                }
-                else
-                {
-                    products=null;
+                } else {
+                    products = null;
                 }
             }
         } catch (SQLException ex) {
@@ -139,29 +136,48 @@ public class Product {
         }
         return products;
     }
-    
-    public Product getProductByID(int id)
-    {
+
+    public static ArrayList<Product> getProductByID(int id) {
         Database db = new Database();
         Statement stmt = null;
-        Product p = null;
+        ArrayList<Product> products = null;
+        String query = "Select * from tbl_product where productid=" + id + ""; 
         try {
             stmt = db.getConnection().createStatement();
-            ResultSet rs = stmt.executeQuery("Select * from tbl_products where id="+id+"");
-            while(rs.next()){
-                if(rs.next())
-                {
-                    p = new Product(rs.getInt(1),rs.getString(2),rs.getString(3),rs.getString(4),rs.getString(5),rs.getFloat(6),rs.getInt(7),rs.getInt(8),rs.getInt(9),rs.getString(10));
-                }
-                else
-                {
-                    p = null;
-                }
+            ResultSet rs = stmt.executeQuery(query);
+            if (rs.next()) {
+                products = new ArrayList<Product>();
+                do {
+                    Product p = new Product(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getFloat(6), rs.getInt(7), rs.getInt(8), rs.getInt(9), rs.getString(10));
+                    products.add(p);
+                } while (rs.next());
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
-        
-        return p;
+
+        return products;
+    }
+
+    public static ArrayList<Product> getProductsByCategory(String category) {
+        Database db = new Database();
+        Statement stmt = null;
+        ArrayList<Product> products = null;
+        String query = "Select * from tbl_product where category='" + category + "'";
+        try {
+            stmt = db.getConnection().createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+
+            if (rs.next()) {
+                products = new ArrayList<Product>();
+                do {
+                    Product p = new Product(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getFloat(6), rs.getInt(7), rs.getInt(8), rs.getInt(9), rs.getString(10));
+                    products.add(p);
+                } while (rs.next());
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return products;
     }
 }

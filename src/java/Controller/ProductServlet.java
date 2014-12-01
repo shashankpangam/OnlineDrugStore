@@ -11,6 +11,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import Model.Product;
+import java.util.ArrayList;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
 
 /**
  *
@@ -29,18 +33,13 @@ public class ProductServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
+        String category = request.getParameter("category");
+        ArrayList<Product> products = Product.getProductsByCategory(category);
+        //response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet ProductServlet</title>");            
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet ProductServlet at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
+            ServletContext sc = getServletConfig().getServletContext();
+            RequestDispatcher rd = sc.getRequestDispatcher("productList.jsp");
+            rd.forward(request, response);
         }
     }
 
@@ -57,9 +56,25 @@ public class ProductServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         PrintWriter out = response.getWriter();
-        String category = request.getParameter("category");
-        out.println(category);
-        //processRequest(request, response);
+        String action = request.getParameter("action");
+        String returnURL = request.getParameter("returnURL");
+        if (action.equals("showProducts")) {
+            String category = request.getParameter("category");
+            ArrayList<Product> products = Product.getProductsByCategory(category);
+            request.setAttribute("products", products);
+            ServletContext sc = getServletConfig().getServletContext();
+            RequestDispatcher rd = sc.getRequestDispatcher(returnURL);
+            rd.forward(request, response);
+        }
+        if(action.equals("showDesc"))
+        {
+            int productID = Integer.parseInt(request.getParameter("ID"));
+            ArrayList<Product> product = Product.getProductByID(productID);
+            request.setAttribute("product",product);
+            ServletContext sc = getServletConfig().getServletContext();
+            RequestDispatcher rd = sc.getRequestDispatcher(returnURL);
+            rd.forward(request, response);
+        }
     }
 
     /**

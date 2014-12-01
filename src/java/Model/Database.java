@@ -42,7 +42,7 @@ public class Database {
     public Database() {
         try {
             ctx = new InitialContext();
-            ds = (DataSource) ctx.lookup("jdbc/DrugStore");
+            ds = (DataSource) ctx.lookup("jdbc/myDatasource_1");
             connect = ds.getConnection();
             this.stmt = null;
         } catch (NamingException ex) {

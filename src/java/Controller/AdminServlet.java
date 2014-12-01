@@ -1,5 +1,3 @@
-
-
 import Model.Product;
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
@@ -157,15 +155,15 @@ public class AdminServlet extends HttpServlet {
         float price = Float.parseFloat(request.getParameter("price")); 
         int quantity = Integer.parseInt(request.getParameter("quantity")); 
         int disupd = Integer.parseInt(request.getParameter("diss"));
-        Product produpd=new Product(productid,productname,description,symptoms,category,price,disupd,quantity);
-        int discc=produpd.getDiscount();
+        Product produpd=new Product(productid,productname,description,symptoms,category,price,disupd,quantity,0,null);
+        int discc=produpd.getIfOnDiscount();
         int id=produpd.getProductID();
-        String name=produpd.getName();
-        String desc=produpd.getDescription();
+        String name=produpd.getProductName();
+        String desc=produpd.getProductDescription();
         String symptom=produpd.getSymptoms();
-        String cate=produpd.getCategory();
-        float pric=produpd.getPrice();
-        int quan=produpd.getQuantity();
+        String cate=produpd.getProductCategory();
+        float pric=produpd.getProductPrice();
+        int quan=produpd.getProductQuantity();
         if(request.getParameter("update").equals("Update")){
              try {
                 Statement stmtupdate = conn.createStatement();
@@ -217,15 +215,15 @@ public class AdminServlet extends HttpServlet {
 		nread = in.read(buf, 0, BUF_SIZE);
 	}
 	
-        Product product=new Product(productid,productname,description,symptoms,category,price,dis,quantity,imagepath);
+        Product product=new Product(productid,productname,description,symptoms,category,price,dis,quantity,0,imagepath);
         int id=product.getProductID();
-        String name=product.getName();
-        String desc=product.getDescription();
+        String name=product.getProductName();
+        String desc=product.getProductDescription();
         String symptom=product.getSymptoms();
-        String cate=product.getCategory();
-        float pric=product.getPrice();
-        int quan=product.getQuantity();
-        int disc=product.getDiscount();
+        String cate=product.getProductCategory();
+        float pric=product.getProductPrice();
+        int quan=product.getProductQuantity();
+        int disc=product.getIfOnDiscount();
       
          if(request.getParameter("add").equals("Add")){
          try {  
