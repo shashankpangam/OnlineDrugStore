@@ -60,23 +60,23 @@ public final class AuthFilter implements Filter {
             return;
         }
         
-//        try {
-//            String curUserID = Integer.toString((int)servReq.getSession().getAttribute(AppEnvConst.SESSION_USERID));
-//            if( curUserID==null || curUserID.isEmpty() ) { //not logined in
-//                HttpServletResponse resp = (HttpServletResponse) response;
-//                resp.sendRedirect("login.jsp");
-//            } 
-//            else {
-//                chain.doFilter(request, response);                
-//            }
-//        } catch (java.lang.NullPointerException e) { //casting null active user
-//            HttpServletResponse resp = (HttpServletResponse) response;
-//            resp.sendRedirect("login.jsp");
-//        }
+        try {
+            String curUserID = Integer.toString((int)servReq.getSession().getAttribute(AppEnvConst.SESSION_USERID));
+            if( curUserID==null || curUserID.isEmpty() ) { //not logined in
+                HttpServletResponse resp = (HttpServletResponse) response;
+                resp.sendRedirect("login.jsp");
+            } 
+            else {
+                chain.doFilter(request, response);                
+            }
+        } catch (java.lang.NullPointerException e) { //casting null active user
+            HttpServletResponse resp = (HttpServletResponse) response;
+            resp.sendRedirect("login.jsp");
+        }
         //For test
-        servReq.getSession().setAttribute(AppEnvConst.SESSION_USERID, "HB001");
-        
-        chain.doFilter(request, response);
+//        servReq.getSession().setAttribute(AppEnvConst.SESSION_USERID, "HB001");
+//        
+//        chain.doFilter(request, response);
         //Fortest end
         return;
     }
