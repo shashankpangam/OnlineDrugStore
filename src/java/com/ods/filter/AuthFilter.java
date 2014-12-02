@@ -64,14 +64,14 @@ public final class AuthFilter implements Filter {
             String curUserID = Integer.toString((int)servReq.getSession().getAttribute(AppEnvConst.SESSION_USERID));
             if( curUserID==null || curUserID.isEmpty() ) { //not logined in
                 HttpServletResponse resp = (HttpServletResponse) response;
-                resp.sendRedirect("login.jsp");
+                resp.sendRedirect("LoginServlet.jsp?action=Login&returnURL=/View/login.jsp");
             } 
             else {
                 chain.doFilter(request, response);                
             }
         } catch (java.lang.NullPointerException e) { //casting null active user
             HttpServletResponse resp = (HttpServletResponse) response;
-            resp.sendRedirect("login.jsp");
+            resp.sendRedirect("LoginServlet.jsp?action=Login&returnURL=/View/login.jsp");
         }
         //For test
 //        servReq.getSession().setAttribute(AppEnvConst.SESSION_USERID, "HB001");
