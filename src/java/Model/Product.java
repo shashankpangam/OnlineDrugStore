@@ -5,6 +5,7 @@
  */
 package Model;
 
+import com.ods.model.ODSDatabase;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -117,11 +118,11 @@ public class Product {
     }
 
     public static ArrayList<Product> getAllProducts() {
-        Database db = new Database();
+        //Database db = new Database();
         Statement stmt = null;
         ArrayList<Product> products = new ArrayList<Product>();
         try {
-            stmt = db.getConnection().createStatement();
+            stmt = stmt = ODSDatabase.getDB().createStatement(); //db.getConnection().createStatement();
             ResultSet rs = stmt.executeQuery("Select * from tbl_product");
             while (rs.next()) {
                 if (rs.next()) {
@@ -138,12 +139,12 @@ public class Product {
     }
 
     public static ArrayList<Product> getProductByID(int id) {
-        Database db = new Database();
+        //Database db = new Database();
         Statement stmt = null;
         ArrayList<Product> products = null;
         String query = "Select * from tbl_product where productid=" + id + ""; 
         try {
-            stmt = db.getConnection().createStatement();
+            stmt = stmt = ODSDatabase.getDB().createStatement(); //db.getConnection().createStatement();
             ResultSet rs = stmt.executeQuery(query);
             if (rs.next()) {
                 products = new ArrayList<Product>();
@@ -160,12 +161,12 @@ public class Product {
     }
 
     public static ArrayList<Product> getProductsByCategory(String category) {
-        Database db = new Database();
+        //Database db = new Database();
         Statement stmt = null;
         ArrayList<Product> products = null;
         String query = "Select * from tbl_product where category='" + category + "'";
         try {
-            stmt = db.getConnection().createStatement();
+            stmt = ODSDatabase.getDB().createStatement(); //db.getConnection().createStatement();
             ResultSet rs = stmt.executeQuery(query);
 
             if (rs.next()) {
@@ -175,9 +176,11 @@ public class Product {
                     products.add(p);
                 } while (rs.next());
             }
+            stmt.close();
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
         return products;
     }
 }
+
