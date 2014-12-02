@@ -62,15 +62,28 @@
     <body>
         <div id="header">
             <a href=""><img src="images/logo.png" width="237" height="123" class="float" alt="setalpm" /></a>																																																			<div class="topnav">
-                <span><strong>Welcome</strong> &nbsp;<a href="View/login.jsp">Log in</a> &nbsp; | &nbsp; <a href="View/register.jsp">Register</a></span>
+                <span><strong>Welcome:</strong><%
+                    if (session.getAttribute("sessionfname") != null) {
+                    %>
+                    <%= session.getAttribute("sessionfname")%>
+
+                    &nbsp; | &nbsp; <a href="LoginServlet?next=logout" >Logout</a> </span>
+
+                <%
+                } else {
+                %>
+                <a href="LoginServlet.jsp?action=Login&returnURL=/View/login.jsp">Log in</a> &nbsp; | &nbsp; <a href="LoginServlet.jsp?action=Register&returnURL=/View/register.jsp">Register</a></span>
+                <%
+                    }
+                %>
             </div>
             <ul id="menu">
-                <li><a href="View/index.jsp"><img src="images/but1.gif" alt="Home Page" width="110" height="32" /></a></li>
-                <li><a href="View/login.jsp"><img src="images/but2.gif" alt="Log in" width="110" height="32" /></a></li>
-                <li><a href="View/register.jsp"><img src="images/but3.gif" alt="Registration" width="110" height="32" /></a></li>
-                <li><a href="View/login.jsp"><img src="images/but4.gif" alt="My account" width="110" height="32" /></a></li>
-                <li><a href="View/index.jsp"><img src="images/but5.gif" alt="Shopping Cart" width="110" height="32" /></a></li>
-                <li><a href="View/index.jsp"><img src="images/but6.gif" alt="Checkout" width="110" height="32" /></a></li>
+                <li><a href="index.jsp"><img src="images/but1.gif" alt="Home Page" width="110" height="32" /></a></li>
+                <li><a href="LoginServlet.jsp?action=Login&returnURL=/View/login.jsp"><img src="images/but2.gif" alt="Log in" width="110" height="32" /></a></li>
+                <li><a href="LoginServlet.jsp?action=Register&returnURL=/View/register.jsp"><img src="images/but3.gif" alt="Registration" width="110" height="32" /></a></li>
+                <!--<li><a href="View/login.jsp"><img src="images/but4.gif" alt="My account" width="110" height="32" /></a></li>-->
+                <li><a href="index.jsp"><img src="images/but5.gif" alt="Shopping Cart" width="110" height="32" /></a></li>
+                <li><a href="index.jsp"><img src="images/but6.gif" alt="Checkout" width="110" height="32" /></a></li>
             </ul>
         </div>
 

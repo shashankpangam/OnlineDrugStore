@@ -24,7 +24,7 @@
                     for (int i = 0; i < products.size(); i++) {
                         out.print("<div class='item center' style='height:260px;'>");
                         out.print("<a href='ProductServlet.jsp?action=showDesc&category="+category+"&ID=" + products.get(i).getProductID() + "&returnURL=/View/productDesc.jsp'><img src='" + products.get(i).getProductImage() + "' width='190' height='192'/></a><br />");
-                        out.print("<p style='float:left;'><a href='productDesc.php?action=showDesc&category="+category+"&ID=" + products.get(i).getProductID() + "&returnURL=/View/productDesc.jsp'>" + products.get(i).getProductName() + "</a></p><span class='price'>" + products.get(i).getProductPrice() + "</span><br /></div>");
+                        out.print("<p style='float:left;'><a href='productDesc.php?action=showDesc&category="+category+"&ID=" + products.get(i).getProductID() + "&returnURL=/View/productDesc.jsp'>" + products.get(i).getProductName() + "</a></p><span class='price'>$" + products.get(i).getProductPrice() + "</span><br /></div>");
                     }
                 %>
             </div>

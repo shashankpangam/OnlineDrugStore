@@ -25,18 +25,20 @@ import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 import Model.Customer;
 import java.sql.ResultSet;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import javax.servlet.ServletContext;
 
 /**
  *
  * @author Paramjyot
  */
 public class UserServlet extends HttpServlet {
- 
-    private static File file;
-    Context ctx = null;
-    DataSource ds = null;
-    Connection conn =null;
-    private Statement stmt;
+
+//    Context ctx = null;
+//    DataSource ds = null;
+//    Connection conn = null;
+//    private Statement stmt;
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -49,11 +51,25 @@ public class UserServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        
-        
-        
+        //HttpSession session = request.getSession();
+
     }
-        
+
+    boolean digits(String id) {
+        return id.matches("[0-9]+");
+    }
+
+    boolean alpha(String name) {
+        return name.matches("[a-zA-Z]+");
+    }
+
+    boolean emailregex(String email) {
+        return email.matches("^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$");
+    }
+
+    boolean datecheck(String date) {
+        return date.matches("^[0-9]{4}-[0-1][0-9]-[0-3][0-9]$");
+    }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
@@ -69,23 +85,19 @@ public class UserServlet extends HttpServlet {
             throws ServletException, IOException {
         processRequest(request, response);
     }
-    
-     public void init (ServletConfig config) throws ServletException
-        {
-            
-           
-        try {
-            ctx = new InitialContext();
-            ds = (DataSource)ctx.lookup("jdbc/myDatasource");
-            conn = ds.getConnection();
-        } catch (NamingException ex) {
-            Logger.getLogger(OrderServlet.class.getName()).log(Level.SEVERE, null, ex);
-        }
-         catch (SQLException ex) {
-            Logger.getLogger(OrderServlet.class.getName()).log(Level.SEVERE, null, ex);
-        }
-       }
 
+//    public void init(ServletConfig config) throws ServletException {
+//
+//        try {
+//            ctx = new InitialContext();
+//            ds = (DataSource) ctx.lookup("jdbc/myDatasource");
+//            conn = ds.getConnection();
+//        } catch (NamingException ex) {
+//            Logger.getLogger(OrderServlet.class.getName()).log(Level.SEVERE, null, ex);
+//        } catch (SQLException ex) {
+//            Logger.getLogger(OrderServlet.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//    }
     /**
      * Handles the HTTP <code>POST</code> method.
      *
@@ -97,62 +109,140 @@ public class UserServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-       // processRequest(request, response);
+        ServletConfig cfg = getServletConfig();
         
-        String customerid=request.getParameter("customerid");
-        String fname=request.getParameter("fname");
-        String lname=request.getParameter("lname");
+        //String customerid = request.getParameter("customerid");
+        String fname = request.getParameter("fname");
+        String lname = request.getParameter("lname");
         String dob = request.getParameter("dob");
         String address1 = request.getParameter("address1");
-        String address2 = request.getParameter("address2"); 
+        String address2 = request.getParameter("address2");
         String city = request.getParameter("city");
         String zip = request.getParameter("zip");
-        String province = request.getParameter("province"); 
-        String email = request.getParameter("email"); 
-        String gender = request.getParameter("gender"); 
+        String province = request.getParameter("province");
+        String email = request.getParameter("email");
+        String gender = request.getParameter("gender");
         String passwd = request.getParameter("passwd");
         String repwd = request.getParameter("repwd");
-        
-      try (PrintWriter out = response.getWriter()) {
-        
-        Customer customer=new Customer(Integer.parseInt(customerid),fname,lname,dob,address1,address2,city,zip,province, gender,email,passwd,repwd);
-        
-        int custid=customer.getID();
-        String custfname=customer.getFname();
-        String custlname=customer.getLname();
-        String custdob=customer.getDOB();
-        String custaddress1=customer.getAddress1();
-        String custaddress2=customer.getAddress2();
-        String custcity=customer.getCity();
-        String custzip=customer.getZip();
-        String custprovince=customer.getProvince();
-        String custemail=customer.getEmail();
-        String custgender=customer.getGender();
-        String custpasswd=customer.getPasswd();
-        String custrepwd=customer.getRetypepwd();
-  
-          try {     
-       stmt = conn.createStatement();
-       if (conn!=null){
-            ResultSet rs=stmt.executeQuery("SELECT * FROM  TBL_CUSTOMER WHERE email='"+email+"'");   
-            if(!rs.next()){         
-            stmt.executeUpdate("INSERT INTO TBL_CUSTOMER(CUSTOMERID,FIRSTNAME,LASTNAME,DOB,ADDRESS1,ADDRESS2,CITY,ZIP,PROVINCE,GENDER,EMAIL,USERNAME,PASSWORD) VALUES ("+custid+",'"+custfname+"','"+custlname+"', TO_DATE('"+custdob+"','yyyy-mm-dd') ,'"+custaddress1+"','"+custaddress2+"','"+custcity+"','"+custzip+"','"+custprovince+"','"+custgender+"','"+custemail+"', '"+custemail+"', '"+custpasswd+"' )");       
-            stmt.close();
-            
-            out.println("Row Inserted Successfully");
-            RequestDispatcher rd = request.getRequestDispatcher("login.jsp");
-	    rd.include(request, response);
+
+      //  boolean custidisvalid = false;
+        boolean fnameisvalid = false;
+        boolean lnameisvalid = false;
+        boolean dobisvalid = false;
+        boolean address1isvalid = false;
+        boolean address2isvalid = false;
+        boolean cityisvalid = false;
+        boolean zipisvalid = false;
+        boolean provinceisvalid = false;
+        boolean emailisvalid = false;
+        boolean genderisvalid = false;
+        boolean passwdisvalid = false;
+        boolean repwdisvalid = false;
+
+        try (PrintWriter out = response.getWriter()) {
+            //Validation               
+            if (fname.equals("") || lname.equals("") || dob.equals("") || address1.equals("")
+                    || address2.equals("") || city.equals("") || zip.equals("") || province.equals("") || email.equals("") || gender.equals("") || passwd.equals("")
+                    || repwd.equals("")) {
+               
+
+                if (fname == null || fname.equals("")) {
+                    out.println("<p style='color:red'>Please enter your First Name <p/>");
+                }
+                if (lname == null || lname.equals("")) {
+                    out.println("<p style='color:red'>Please enter your Last Name <p/>");
+                }
+                if (dob == null || dob.equals("")) {
+                    out.println("<p style='color:red'>Please enter your Date Of Birth <p/>");
+                }
+                if (address1 == null || address1.equals("") || address2 == null || address2.equals("")) {
+                    out.println("<p style='color:red'>Please enter your address <p/>");
+                }
+
+                if (city == null || city.equals("")) {
+                    out.println("<p style='color:red'>Please enter your City<p/>");
+                }
+                if (zip == null || zip.equals("")) {
+                    out.println("<p style='color:red'>Please enter your ZipCode<p/>");
+                }
+                if (province == null || province.equals("")) {
+                    out.println("<p style='color:red'>Please enter your Province<p/>");
+                }
+                if (gender == null || gender.equals("")) {
+                    out.println("<p style='color:red'>Please enter your Gender<p/>");
+                }
+                if (passwd == null || passwd.equals("")) {
+                    out.println("<p style='color:red'>Please enter your Password<p/>");
+                }
+                if (repwd == null || repwd.equals("")) {
+                    out.println("<p style='color:red'>Please enter your Retyped Password<p/>");
+                }
+            } else if (!alpha(fname) || (!alpha(lname))) {
+                out.println("<p style='color:red'>Enter only alphabets for Name <p />");
+            } else if ((zip.length() != 6)) {
+                out.println("<p style='color:red'>Zip should be 6 in length<p/>");
+            } else if ((passwd.length() != 6) || (repwd.length() != 6)) {
+                out.println("<p style='color:red'>Password should be 6 in length<p/>");
+            } else if (!emailregex(email)) {
+                out.println("<p style='color:red'>Invalid Email Address<p/>");
+            } else if (!datecheck(dob)) {
+                out.println("<p style='color:red'>Invalid DOB<p/>");
+            } else {
+                
+                fnameisvalid = true;
+                lnameisvalid = true;
+                dobisvalid = true;
+                address1isvalid = true;
+                address2isvalid = true;
+                cityisvalid = true;
+                zipisvalid = true;
+                provinceisvalid = true;
+                emailisvalid = true;
+                genderisvalid = true;
+                passwdisvalid = true;
+                repwdisvalid = true;
             }
-            else{
-            out.println("User already registered!");
-            RequestDispatcher rd = request.getRequestDispatcher("login.jsp");   
+
+            //when valid
+            if ((fnameisvalid == true) && (lnameisvalid == true) && (dobisvalid == true) && (address1isvalid == true)
+                    && (address2isvalid == true) && (cityisvalid == true) && (zipisvalid == true) && (provinceisvalid == true) && (emailisvalid == true)
+                    && (genderisvalid == true) && (passwdisvalid == true) && (repwdisvalid == true)) {
+                Customer customer = new Customer(0, fname, lname, dob, address1, address2, city, zip, province, gender, email, passwd, null);
+
+               // int custid = customer.getCustomerid();
+                String custfname = customer.getFname();
+                String custlname = customer.getLname();
+                String custdob = customer.getDob();
+                String custaddress1 = customer.getAddress1();
+                String custaddress2 = customer.getAddress2();
+                String custcity = customer.getCity();
+                String custzip = customer.getZip();
+                String custprovince = customer.getProvince();
+                String custemail = customer.getEmail();
+                String custgender = customer.getGender();
+                String custpasswd = customer.getPasswd();
+                //String custrepwd = customer.getRetypepwd();
+
+                try {
+                    boolean flag = Customer.insertNewCustomer(customer);
+                    if (flag = true) {
+                        out.println("Row Inserted Successfully");
+                        ServletContext sc = cfg.getServletContext();
+                        RequestDispatcher rd = sc.getRequestDispatcher("View/login.jsp");
+                        rd.forward(request, response);
+                    } else {
+                        out.println("User already registered!");
+                        ServletContext sc = cfg.getServletContext();
+                        RequestDispatcher rd = sc.getRequestDispatcher("/View/login.jsp");
+                        rd.forward(request, response);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else {
+                out.println("Invalid data!");
             }
-       }            
-          }
-       catch( SQLException e ) {
-          e.printStackTrace();
-       }  
-      }
+        }
     }
 
     /**

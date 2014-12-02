@@ -3,13 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package Controller;
 
 import Model.Customer;
 import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.ResultSet;
@@ -20,25 +17,26 @@ import java.util.logging.Logger;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
+import javax.sql.DataSource;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.io.PrintWriter;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.sql.DataSource;
-import javax.servlet.http.HttpSession;
+import Model.Product;
+import java.util.ArrayList;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
 
 /**
  *
  * @author Paramjyot
  */
 public class LoginServlet extends HttpServlet {
-    private static File file;
-    Context ctx = null;
-    DataSource ds = null;
-    Connection conn =null;
-    private Statement stmt;
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -50,11 +48,12 @@ public class LoginServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-          
-        }
+
+//    if(request.getParameter("next").equals("Logout")){
+//        session.setAttribute("userid", null);
+//        session.invalidate();
+//        RequestDispatcher rd = request.getRequestDispatcher("index.jsp");
+//    }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -69,97 +68,19 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
-          HttpSession session = request.getSession();
-       // processRequest(request, response);
-         try (PrintWriter out = response.getWriter()) {
-             
-             if(request.getParameter("next").equals("Register")){
-              RequestDispatcher rd = request.getRequestDispatcher("register.jsp");
-	      rd.include(request, response);
-                 }
-     
-        if(request.getParameter("next").equals("Login")){
-
-       Customer customer;
-       String email = request.getParameter("email");
-       String passwd = request.getParameter("passwd");
-       Statement stmt = conn.createStatement();
-       ResultSet rs=stmt.executeQuery("SELECT * FROM  TBL_CUSTOMER WHERE email='"+email+"'");   
-              
-           if(rs.next()){   
-           out.println("User Found....");
-           out.println("Authenticating........");
-               if((rs.getString("PASSWORD")).equals(request.getParameter("passwd"))){
-   
-           customer=new Customer();
-           
-           customer.setID(rs.getInt("CUSTOMERID"));
-           customer.setFname(rs.getString("FIRSTNAME"));
-           customer.setLname(rs.getString("LASTNAME"));
-           customer.setDOB(rs.getString("DOB"));
-           customer.setAddress1(rs.getString("ADDRESS1"));
-           customer.setAddress2(rs.getString("ADDRESS2"));
-           customer.setCity(rs.getString("CITY"));
-           customer.setZip(rs.getString("ZIP"));
-           customer.setProvince(rs.getString("PROVINCE"));
-           customer.setGender(rs.getString("GENDER"));
-           customer.setEmail(rs.getString("EMAIL"));
-           customer.setUname(rs.getString("USERNAME"));
-           customer.setPasswd(rs.getString("PASSWORD"));
-          // customer.setLastSignIn(rs.getTimestamp("LASTSIGNIN"));
-                     
-           session.setAttribute("sessioncustid", customer.getID());
-           session.setAttribute("sessionfname", customer.getFname());
-           session.setAttribute("sessionlname", customer.getLname());
-           session.setAttribute("sessiondob", customer.getDOB());
-           session.setAttribute("sessionaddress1", customer.getAddress1());
-           session.setAttribute("sessionaddress2", customer.getAddress2());
-           session.setAttribute("sessioncity", customer.getCity());
-           session.setAttribute("sessionzip", customer.getZip());
-           session.setAttribute("sessionprovince", customer.getProvince());
-           session.setAttribute("sessionemail", customer.getEmail());
-           session.setAttribute("sessionuname", customer.getEmail());
-           session.setAttribute("sessionpasswd", customer.getPasswd());
-           
-          
-           
-           RequestDispatcher rd = request.getRequestDispatcher("success.jsp");
-	   rd.forward(request, response);
- 
-           // setting SESSION
-      
-           //request.setAttribute("customer",customer);
-               }
-               
-           out.println("Wrong Password! Try Again");
-                    
-               
-           RequestDispatcher rd = request.getRequestDispatcher("login.jsp");
-           
-           }
-
-       
-           if(!rs.next()) {
-               out.println("No Data found");
-               out.println("Invalid Credentials! Try Again! ");
-            }  
-       stmt.close();
-      // conn.close();
-       
-
-  
-//        RequestDispatcher rd = request.getRequestDispatcher("register.jsp");
-//        rd.forward(request, response);
-//        }
-//        
-//        
+        String action = request.getParameter("action");
+        String returnURL = request.getParameter("returnURL");
+        ServletConfig cfg = getServletConfig();
+        if (action.equals("Login")) {
+            ServletContext sc = cfg.getServletContext();
+            RequestDispatcher rd = sc.getRequestDispatcher(returnURL);
+            rd.forward(request, response);
+        } else if (action.equals("Register")) {
+            ServletContext sc = cfg.getServletContext();
+            RequestDispatcher rd = sc.getRequestDispatcher(returnURL);
+            rd.forward(request, response);
+        }
     }
-        
-         } catch (SQLException ex) {
-            Logger.getLogger(LoginServlet.class.getName()).log(Level.SEVERE, null, ex);
-        }}
-    
 
     /**
      * Handles the HTTP <code>POST</code> method.
@@ -172,25 +93,79 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        HttpSession session = request.getSession(true);
+        ServletConfig cfg = getServletConfig();
+        try (PrintWriter out = response.getWriter()) {
+
+            String nextAct = request.getParameter("next");
+            if (nextAct.equalsIgnoreCase("Register")) {
+                ServletContext sc = cfg.getServletContext();
+                RequestDispatcher rd = sc.getRequestDispatcher("/View/register.jsp");
+                rd.forward(request, response);
+            } else if (nextAct.equalsIgnoreCase("Logout")) {
+
+                session.setAttribute("sessionfname", null);
+                session.invalidate();
+                ServletContext sc = cfg.getServletContext();
+                RequestDispatcher rd = sc.getRequestDispatcher("/View/index.jsp");
+                rd.forward(request, response);
+            } else if (nextAct.equalsIgnoreCase("Login")) {
+                String email = request.getParameter("email");
+                String passwd = request.getParameter("passwd");
+
+                if (email.equals("admin") && passwd.equals("admin")) {
+                    out.println("admin");
+                    ServletContext sc = cfg.getServletContext();
+                    RequestDispatcher rd = sc.getRequestDispatcher("/View/Admin_AddProduct.jsp");
+                    rd.forward(request, response);
+                }
+
+                ArrayList<Customer> customers = Customer.loginAction(email, passwd);
+                Customer customer = customers.get(0);
+                if (customer != null) {
+                    out.println("User Found....");
+                    out.println("Authenticating........");
+                    if ((customer.getPasswd()).equals(request.getParameter("passwd"))) {
+                        session.setAttribute("sessioncustid", customer.getCustomerid());
+                        session.setAttribute("sessionfname", customer.getFname());
+                        session.setAttribute("sessionlname", customer.getLname());
+                        session.setAttribute("sessiondob", customer.getDob());
+                        session.setAttribute("sessionaddress1", customer.getAddress1());
+                        session.setAttribute("sessionaddress2", customer.getAddress2());
+                        session.setAttribute("sessioncity", customer.getCity());
+                        session.setAttribute("sessionzip", customer.getZip());
+                        session.setAttribute("sessionprovince", customer.getProvince());
+                        session.setAttribute("sessionemail", customer.getEmail());
+                        session.setAttribute("sessionuname", customer.getEmail());
+                        session.setAttribute("sessionpasswd", customer.getPasswd());
+
+                        ServletContext sc = cfg.getServletContext();
+                        RequestDispatcher rd = sc.getRequestDispatcher("/View/index.jsp");
+                        rd.forward(request, response);
+
+                    }
+                    ServletContext sc = cfg.getServletContext();
+                    RequestDispatcher rd = sc.getRequestDispatcher("/View/login.jsp");
+                } else {
+                    out.println("No Customers found");
+                    out.println("Invalid Credentials! Try Again! ");
+                }
+
+            }
+        } catch (Exception ex) {
+            Logger.getLogger(LoginServlet.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
-    
-    
-     public void init (ServletConfig config) throws ServletException
-        {
-            
-           
-        try {
-            ctx = new InitialContext();
-            ds = (DataSource)ctx.lookup("jdbc/myDatasource");
-            conn = ds.getConnection();
-        } catch (NamingException ex) {
-            Logger.getLogger(OrderServlet.class.getName()).log(Level.SEVERE, null, ex);
-        }
-         catch (SQLException ex) {
-            Logger.getLogger(OrderServlet.class.getName()).log(Level.SEVERE, null, ex);
-        }
-       }
+
+    public void sessioninvalid(HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        session.setAttribute("sessionfname", null);
+        session.invalidate();
+        ServletConfig cfg = getServletConfig();
+        ServletContext sc = cfg.getServletContext();
+        RequestDispatcher rd = sc.getRequestDispatcher("/View/index.jsp");
+//        }
+    }
 
     /**
      * Returns a short description of the servlet.

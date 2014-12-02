@@ -13,39 +13,18 @@
 <%@page import="javax.naming.Context"%>
 <%@page import="java.sql.Connection"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@page import="servlets.AdminServlet"%>
 <%@include file="Header.jsp" %>
 <div id="content">
-
-    <%@include file="sidebar.jsp" %>
-  <div class="contactform">  
+    <%@include file="Admin_Sidebar.jsp" %>
+    <div class="contactform">  
         <p class="txtcontus" style="width: 600px;"><font color="white"><strong>Add Product Form</strong></font></p><br />
 
         <form method="post" action="AdminServlet" enctype="multipart/form-data"> 
             <fieldset class="contusfs" style="width: 600px; height: 500px">
-              <p style="padding-left: 30px; padding-top: 9px;">  <font color="red">* Indicates a required field </font> </p>
-               
+                <p style="padding-left: 30px; padding-top: 9px;">  <font color="red">* Indicates a required field </font> </p>
                 <div class="slide">
-                    
-                    
-                    <%
-                       
-                          Connection conn=null;
-              Context ctx=null;
-              DataSource ds = null;
-            try {
-             ctx = new InitialContext();
-             ds = (DataSource)ctx.lookup("jdbc/myDatasource");
-             conn = ds.getConnection();
-        } catch (NamingException ex) {}
-          catch (SQLException ex) { }
-             Statement stmt = conn.createStatement();
-       ResultSet rs=stmt.executeQuery("select MAX(ProductID)+1 from  TBL_PRODUCT"); 
-      
-                        
-                        %>
                     <table style="width:80%" cellspacing="15">
-                        
+
                         <tr>
                             <td>Product ID<font color="red">*</font>:</td>&nbsp;
                             <td><span class="error"><input type="text" name="productid" readonly="true" value="<% if(rs.next()) out.print(rs.getInt(1)); %>"/></span></td>		
@@ -77,7 +56,7 @@
                             <td>Price<font color="red">*</font>:</td>
                             <td><input type="text" name="price" value=""/></td>		
                         </tr>
-                     
+
                         <tr>
                             <td>Quantity<font color="red">*</font>:</td>
                             <td><span class="error"><input type="text" name="quantity" value=""/></span></td>		
@@ -86,7 +65,7 @@
                             <td>Image<font color="red">*</font>:</td>
                             <td><span class="error"><input type="file" name="productimage" accept="image/png,image/gif,image/jpeg" value=""/></span></td>		
                         </tr>
-                          <tr>
+                        <tr>
                             <td>On Discount<font color="red">*</font>:</td>
                             <td><span class="error"><input type="radio" name="discount" value="1" /></span></td>	
                             <td>Not On Discount<font color="red">*</font>:</td>
@@ -105,5 +84,5 @@
         </form>       
     </div> 
 </div>
-    <%@include file="footer.jsp" %>
+<%@include file="footer.jsp" %>
 
