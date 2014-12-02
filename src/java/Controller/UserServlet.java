@@ -207,7 +207,7 @@ public class UserServlet extends HttpServlet {
             if ((fnameisvalid == true) && (lnameisvalid == true) && (dobisvalid == true) && (address1isvalid == true)
                     && (address2isvalid == true) && (cityisvalid == true) && (zipisvalid == true) && (provinceisvalid == true) && (emailisvalid == true)
                     && (genderisvalid == true) && (passwdisvalid == true) && (repwdisvalid == true)) {
-                Customer customer = new Customer(0, fname, lname, dob, address1, address2, city, zip, province, gender, email, passwd, null);
+                Customer customer = new Customer(0, fname, lname, dob, address1, address2, city, zip, province, gender, email, passwd);
 
                // int custid = customer.getCustomerid();
                 String custfname = customer.getFname();

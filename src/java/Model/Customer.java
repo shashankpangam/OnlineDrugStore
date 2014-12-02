@@ -5,6 +5,7 @@
  */
 package Model;
 
+import com.ods.model.ODSDatabase;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -30,12 +31,12 @@ public class Customer {
     private String email;
     private String uname;
     private String passwd;
-    private Date lastsignin;
+    //private Date lastsignin;
 
     public Customer() {
     }
 
-    public Customer(int customerid, String fname, String lname, String dob, String address1, String address2, String city, String zip, String province, String gender, String email, String passwd, Date lastsignin) {
+    public Customer(int customerid, String fname, String lname, String dob, String address1, String address2, String city, String zip, String province, String gender, String email, String passwd) {
         this.customerid = customerid;
         this.fname = fname;
         this.lname = lname;
@@ -49,7 +50,7 @@ public class Customer {
         this.email = email;
         this.uname = email;
         this.passwd = passwd;
-        this.lastsignin = lastsignin;
+        //this.lastsignin = lastsignin;
     }
 
     public int getCustomerid() {
@@ -156,13 +157,13 @@ public class Customer {
         this.passwd = passwd;
     }
 
-    public Date getLastsignin() {
-        return lastsignin;
-    }
-
-    public void setLastsignin(Date lastsignin) {
-        this.lastsignin = lastsignin;
-    }
+//    public Date getLastsignin() {
+//        return lastsignin;
+//    }
+//
+//    public void setLastsignin(Date lastsignin) {
+//        this.lastsignin = lastsignin;
+//    }
 
     
     
@@ -171,25 +172,21 @@ public class Customer {
                 && (passwd != null && passwd.length() > 0);
     }
 
-    public static ArrayList<Customer> loginAction(String username, String password) {
-        Database db = new Database();
+    public static Customer loginAction(String username, String password) {
+        //Database db = new Database();
         Statement stmt = null;
-        ArrayList<Customer> customers = null;
+        Customer c = null;
         String query = "SELECT * FROM  TBL_CUSTOMER WHERE email='" + username + "' and password='" + password + "'";
         try {
-            stmt = db.getConnection().createStatement();
+            stmt = ODSDatabase.getDB().createStatement();
             ResultSet rs = stmt.executeQuery(query);
             if (rs.next()) {
-                customers = new ArrayList<Customer>();
-                do {
-                    Customer c = new Customer(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getString(6), rs.getString(7), rs.getString(8), rs.getString(9), rs.getString(10),rs.getString(11),rs.getString(12),rs.getDate(13));
-                    customers.add(c);
-                } while (rs.next());
+                    c = new Customer(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getString(6), rs.getString(7), rs.getString(8), rs.getString(9), rs.getString(10),rs.getString(11),rs.getString(12));
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
-        return customers;
+        return c;
     }
     
     public static boolean insertNewCustomer(Customer customer)
@@ -207,12 +204,12 @@ public class Customer {
         String custpasswd = customer.getPasswd();
         
         boolean flag = false;
-        Database db = new Database();
+        //Database db = new Database();
         Statement stmt = null;
         String query = "INSERT INTO TBL_CUSTOMER(CUSTOMERID,FIRSTNAME,LASTNAME,DOB,ADDRESS1,ADDRESS2,CITY,ZIP,PROVINCE,GENDER,EMAIL,USERNAME,PASSWORD) VALUES (SEQ_CUSTOMER.nextval,'" + custfname + "','" + custlname + "', TO_DATE('" + custdob + "','yyyy-mm-dd') ,'" + custaddress1 + "','" + custaddress2 + "','" + custcity + "','" + custzip + "','" + custprovince + "','" + custgender + "','" + custemail + "', '" + custemail + "', '" + custpasswd + "' )";
         
         try {
-            stmt = db.getConnection().createStatement();
+            stmt = ODSDatabase.getDB().createStatement();
             int rs = stmt.executeUpdate(query);
             if (rs==0) {
                 flag= false;

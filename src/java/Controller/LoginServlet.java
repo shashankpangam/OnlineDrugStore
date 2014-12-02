@@ -118,14 +118,13 @@ public class LoginServlet extends HttpServlet {
                     ServletContext sc = cfg.getServletContext();
                     RequestDispatcher rd = sc.getRequestDispatcher("/View/Admin_AddProduct.jsp");
                     rd.forward(request, response);
-                }
+                } else {
 
-                ArrayList<Customer> customers = Customer.loginAction(email, passwd);
-                Customer customer = customers.get(0);
-                if (customer != null) {
-                    out.println("User Found....");
-                    out.println("Authenticating........");
-                    if ((customer.getPasswd()).equals(request.getParameter("passwd"))) {
+                    Customer customer = Customer.loginAction(email, passwd);
+                    if (customer != null) {
+                        out.println("User Found....");
+                        out.println("Authenticating........");
+
                         session.setAttribute("sessioncustid", customer.getCustomerid());
                         session.setAttribute("sessionfname", customer.getFname());
                         session.setAttribute("sessionlname", customer.getLname());
@@ -142,15 +141,11 @@ public class LoginServlet extends HttpServlet {
                         ServletContext sc = cfg.getServletContext();
                         RequestDispatcher rd = sc.getRequestDispatcher("/View/index.jsp");
                         rd.forward(request, response);
-
+                    } else {
+                        ServletContext sc = cfg.getServletContext();
+                        RequestDispatcher rd = sc.getRequestDispatcher("/View/login.jsp");
                     }
-                    ServletContext sc = cfg.getServletContext();
-                    RequestDispatcher rd = sc.getRequestDispatcher("/View/login.jsp");
-                } else {
-                    out.println("No Customers found");
-                    out.println("Invalid Credentials! Try Again! ");
                 }
-
             }
         } catch (Exception ex) {
             Logger.getLogger(LoginServlet.class.getName()).log(Level.SEVERE, null, ex);
