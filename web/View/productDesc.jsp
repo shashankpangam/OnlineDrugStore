@@ -17,6 +17,7 @@
                 <%
                     ArrayList<Product> products = (ArrayList<Product>) request.getAttribute("product");
                     Product product = products.get(0);
+                    String category = (String)request.getAttribute("category");                    
                 %>
                 <h2><%out.print(product.getProductName());%></h2>
                 
@@ -57,9 +58,10 @@
                 </div>
             </div>
             <div style="padding-top: 15px;height:250px;">
-                <form method="post" action="cart?action=add&itemid=item9001&itemname=vitD&itemprice=12.6&itemqty=1&returnurl=index_to_shoppingcart.html" > 
+
+                <form method="post" action="cart?action=add" > 
                     <label>Quantity</label>
-                    <select name="product_qty">
+                    <select name="<%= AppEnvConst.CART_PARAM_QTY %>">
                         <option value="1">1</option>
                         <option value="2">2</option>
                         <option value="3">3</option>
@@ -68,7 +70,10 @@
                     </select>
                     <button class="btnsubmit" style="width:90px;height: 30px;">Add To Cart</button>
                     <input type="hidden" name="<%= AppEnvConst.CART_PARAM_ID %>" value="<%out.print(product.getProductID());%>">
-                    <input type="hidden" name="type" value="add" >
+                    <input type="hidden" name="<%= AppEnvConst.CART_PARAM_NAME %>" value="<%out.print(product.getProductName());%>">
+                    <input type="hidden" name="<%= AppEnvConst.CART_PARAM_PRICE %>" value="<%out.print(Float.toString( product.getProductPrice() ) );%>">                    
+                    <input type="hidden" name="<%= AppEnvConst.CART_PARAM_RTNURL %>" value="ProductServlet.jsp?action=showDesc&returnURL=/View/productDesc.jsp&category=<%= category %>&ID=<%= product.getProductID() %>">
+                
                     <!--<input type="hidden" name="return_url" value="returnURL" >-->
                 </form>
             </div>
